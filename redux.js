@@ -1,7 +1,5 @@
-let _state;
-
-function createStore(initialState, reducer) {
-  _state = initialState;
+function createStore(initialState, reducer, enhancer) {
+  let _state = initialState;
 
   return {
     dispatch(action) {
@@ -41,7 +39,7 @@ function combineReducers(reducers) {
     const nextState = {};
     for (const key in reducers) {
       const reducer = reducers[key];
-      nextState[key] = reducer(state[key], action);
+      nextState[key] = reducer(state ? state[key] : undefined, action);
     }
     return nextState;
   };
