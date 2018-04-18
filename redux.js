@@ -1,6 +1,10 @@
 function createStore(initialState, reducer, enhancer) {
   let _state = initialState;
 
+  if (typeof enhancer === 'function') {
+    return enhancer(createStore)(initialState, reducer);
+  }
+
   return {
     dispatch(action) {
       if (typeof action === 'object' && !Array.isArray(action)) {
