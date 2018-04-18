@@ -49,7 +49,26 @@ function combineReducers(reducers) {
   };
 }
 
+function compose(...functions) {
+
+  if (functions.length === 0) return arg => arg;
+  if (functions.length === 1) return functions[0];
+
+  const composeTwo = (f, g) => {
+    return (...args) => f(g(...args));
+  };
+
+  let composed = functions[0];
+  for (let i = 1; i < functions.length; i++) {
+    const func = functions[i];
+    composed = composeTwo(composed, func);
+  }
+
+  return composed;
+}
+
 module.exports = {
   createStore,
   combineReducers,
+  compose,
 };
