@@ -1,4 +1,4 @@
-const { createStore, setReducer, combineReducers } = require('../redux');
+const { createStore, combineReducers } = require('../redux');
 
 describe('createStore', () => {
   it('creates a new store with no initial state', () => {
@@ -72,8 +72,7 @@ describe('store.dispatch - single reducer', () => {
   };
 
   beforeEach(() => {
-    store = createStore(initialState);
-    setReducer(reducer);
+    store = createStore(initialState, reducer);
   });
 
   it('dispatches valid action', () => {
@@ -118,7 +117,7 @@ describe('store.dispatch - single reducer', () => {
 });
 
 describe('store.dispatch - combined reducers', () => {
-  const authReducer = (state, action) => {
+  const authReducer = (state = { isLoggedIn: false }, action) => {
     switch (action.type) {
       case 'LOGIN':
         return { loggedIn: true, userName: action.userName };
@@ -128,7 +127,7 @@ describe('store.dispatch - combined reducers', () => {
         return state;
     }
   };
-  const countReducer = (state, action) => {
+  const countReducer = (state = 0, action) => {
     switch (action.type) {
       case 'INCREMENT':
         return state + 1;
@@ -139,18 +138,18 @@ describe('store.dispatch - combined reducers', () => {
     }
   };
 
-  combineReducers({ auth: authReducer, count: countReducer });
+  const combinedReducer = combineReducers({ auth: authReducer, count: countReducer });
 
   const initialState = { auth: { loggedIn: false }, count: 0 };
   let store;
 
   beforeEach(() => {
-    store = createStore(initialState);
+    store = createStore(initialState, combinedReducer);
   });
 
   it('dispatches valid action in first reducer', () => {
     store.dispatch({ type: 'LOGIN', userName: 'tester' });
-    expect(store.getState().auth).toEqual({ loggedIn: true, userName: 'tester'});
+    expect(store.getState().auth).toEqual({ loggedIn: true, userName: 'tester' });
     expect(store.getState().count).toEqual(initialState.count);
   });
 
@@ -196,10 +195,25 @@ describe('store.dispatch - combined reducers', () => {
 
 });
 
-describe('setReducer', () => {
+describe('combineReducers', () => {
 
-  it('sets valid reducer', () => {
-    const reducer = (state, action) => {
+  let authReducer, countReducer;
+
+  beforeEach(() => {
+    const initialAuthState = { isLoggedIn: false };
+    const initialCountState = 0;
+
+    authReducer = (state = initialAuthState, action) => {
+      switch (action.type) {
+        case 'LOGIN':
+          return { loggedIn: true, userName: action.userName };
+        case 'LOGOUT':
+          return { loggedIn: false };
+        default:
+          return state;
+      }
+    };
+    countReducer = (state = initialCountState, action) => {
       switch (action.type) {
         case 'INCREMENT':
           return state + 1;
@@ -209,40 +223,7 @@ describe('setReducer', () => {
           return state;
       }
     };
-    setReducer(reducer);
   });
-
-  it('throws when setting invalid reducer', () => {
-    expect(() => {
-      const reducer = {};
-      setReducer(reducer);
-    }).toThrow(/^Redux/);
-  });
-
-});
-
-describe('combineReducers', () => {
-
-  const authReducer = (state, action) => {
-    switch (action.type) {
-      case 'LOGIN':
-        return { loggedIn: true, userName: action.userName };
-      case 'LOGOUT':
-        return { loggedIn: false };
-      default:
-        return state;
-    }
-  };
-  const countReducer = (state, action) => {
-    switch (action.type) {
-      case 'INCREMENT':
-        return state + 1;
-      case 'DECREMENT':
-        return state - 1;
-      default:
-        return state;
-    }
-  };
 
   it('combines valid reducers', () => {
     combineReducers({
@@ -251,12 +232,11 @@ describe('combineReducers', () => {
     });
   });
 
-  it('combines valid reducers with invalid state', () => {
-    createStore('this is invalid state');
+  it('combines reducers with no initial state', () => {
     expect(() => {
       combineReducers({
-        auth: authReducer,
-        count: countReducer,
+        auth: state => state,
+        count: state => state,
       });
     }).toThrow(/^Redux/);
   });
