@@ -24,3 +24,11 @@ it('composes more than 2 functions', () => {
 
   expect(compose(double, plus100, square, plus100)(5)).toBe(22250);
 });
+
+it('can be seeded with more than 1 argument', () => {
+  const double = x => x * 2;
+  const square = x => x * x;
+  const add = (x, y) => x + y;
+
+  expect(compose(double, square, add)(5, 2)).toBe(98);
+});
