@@ -1,4 +1,7 @@
-const { createStore, combineReducers } = require('../redux');
+const createStore = require('../src/createStore');
+const combineReducers = require('../src/combineReducers');
+const { authReducer, initialState: initialAuthState } = require('./fixture/authReducer');
+const { countReducer, initialState: initialCountState } = require('./fixture/countReducer');
 
 describe('createStore', () => {
   it('creates a new store with no initial state', () => {
@@ -57,6 +60,7 @@ describe('createStore', () => {
     const initialState = store.getState();
     expect(initialState).toEqual(fn);
   });
+
 });
 
 describe('store.dispatch - single reducer', () => {
@@ -116,125 +120,25 @@ describe('store.dispatch - single reducer', () => {
 
 });
 
-describe('store.dispatch - combined reducers', () => {
-  const authReducer = (state = { isLoggedIn: false }, action) => {
-    switch (action.type) {
-      case 'LOGIN':
-        return { loggedIn: true, userName: action.userName };
-      case 'LOGOUT':
-        return { loggedIn: false };
-      default:
-        return state;
-    }
-  };
-  const countReducer = (state = 0, action) => {
-    switch (action.type) {
-      case 'INCREMENT':
-        return state + 1;
-      case 'DECREMENT':
-        return state - 1;
-      default:
-        return state;
-    }
-  };
-
-  const combinedReducer = combineReducers({ auth: authReducer, count: countReducer });
-
-  const initialState = { auth: { loggedIn: false }, count: 0 };
+describe('store.dispatch - combined reducer', () => {
   let store;
 
   beforeEach(() => {
-    store = createStore(initialState, combinedReducer);
-  });
-
-});
-
-describe('combineReducers', () => {
-
-  let authReducer, countReducer;
-
-  beforeEach(() => {
-    const initialAuthState = { loggedIn: false };
-    const initialCountState = 0;
-
-    authReducer = (state = initialAuthState, action) => {
-      switch (action.type) {
-        case 'LOGIN':
-          return { loggedIn: true, userName: action.userName };
-        case 'LOGOUT':
-          return { loggedIn: false };
-        default:
-          return state;
-      }
-    };
-    countReducer = (state = initialCountState, action) => {
-      switch (action.type) {
-        case 'INCREMENT':
-          return state + 1;
-        case 'DECREMENT':
-          return state - 1;
-        default:
-          return state;
-      }
-    };
-  });
-
-  it('combines valid reducers', () => {
-    combineReducers({
-      auth: authReducer,
-      count: countReducer,
-    });
-  });
-
-  it('combines reducers with no initial state', () => {
-    expect(() => {
-      combineReducers({
-        auth: state => state,
-        count: state => state,
-      });
-    }).toThrow(/^Redux/);
-  });
-
-  it('combines invalid reducers', () => {
-    expect.assertions(4);
-
-    expect(() => {
-      combineReducers();
-    }).toThrow(/^Redux/);
-
-    expect(() => {
-      combineReducers(null);
-    }).toThrow(/^Redux/);
-
-    expect(() => {
-      combineReducers([authReducer, countReducer]);
-    }).toThrow(/^Redux/);
-
-    expect(() => {
-      combineReducers({
-        auth: authReducer({}, {}),
-        count: countReducer({}, {}),
-      });
-    }).toThrow(/^Redux/);
-  });
-
-  it('dispatches valid action in first reducer', () => {
-    const store = createStore({}, combineReducers({
+    store = createStore(undefined, combineReducers({
       auth: authReducer,
       count: countReducer,
     }));
+  });
+
+  it('dispatches valid action in first reducer', () => {
     store.dispatch({ type: 'LOGIN', userName: 'tester' });
     expect(store.getState().auth).toEqual({ loggedIn: true, userName: 'tester' });
-    expect(store.getState().count).toEqual(0);
+    expect(store.getState().count).toEqual(initialCountState);
   });
 
   it('dispatches valid action in first reducer', () => {
-    const store = createStore(undefined, combineReducers({
-      auth: authReducer,
-      count: countReducer,
-    }));
     store.dispatch({ type: 'INCREMENT' });
-    expect(store.getState().auth).toEqual({ loggedIn: false });
+    expect(store.getState().auth).toEqual(initialAuthState);
     expect(store.getState().count).toEqual(1);
   });
 

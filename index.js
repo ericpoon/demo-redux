@@ -82,7 +82,7 @@
 //
 //
 
-const { createStore, combineReducers, compose } = require('./redux');
+const { createStore, combineReducers, compose } = require('./src/redux');
 const countReducer = function (state = 0, action) {
   switch (action.type) {
     case 'SET_COUNT':
@@ -112,8 +112,8 @@ const reducer = combineReducers({
   auth: authReducer,
 });
 
-const logger = require('./playground/loggerEnhancer');
-const timestamper = require('./playground/timestampEnhancer');
+const logger = require('./src/enhancers/loggerEnhancer');
+const timestamper = require('./src/enhancers/timestampEnhancer');
 
 const store = createStore(undefined, reducer, compose(timestamper, logger));
 

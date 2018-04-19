@@ -1,4 +1,4 @@
-const { compose } = require('../redux');
+const compose = require('../src/compose');
 
 it('composes 0 function', () => {
   expect(compose()(5)).toBe(5);
