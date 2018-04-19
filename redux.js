@@ -58,13 +58,7 @@ function compose(...functions) {
     return (...args) => f(g(...args));
   };
 
-  let composed = functions[0];
-  for (let i = 1; i < functions.length; i++) {
-    const func = functions[i];
-    composed = composeTwo(composed, func);
-  }
-
-  return composed;
+  return functions.reduce((accumulated, current) => composeTwo(accumulated, current), i => i);
 }
 
 module.exports = {
