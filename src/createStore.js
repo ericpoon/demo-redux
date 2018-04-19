@@ -1,6 +1,10 @@
 function createStore(initialState, reducer, enhancer) {
   let _state = initialState;
 
+  if (typeof reducer !== 'function') {
+    throw new Error('Redux: Reducer must be a function');
+  }
+
   if (typeof enhancer === 'function') {
     return enhancer(createStore)(initialState, reducer);
   }

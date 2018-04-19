@@ -4,61 +4,78 @@ const { authReducer, initialState: initialAuthState } = require('./fixture/authR
 const { countReducer, initialState: initialCountState } = require('./fixture/countReducer');
 
 describe('createStore', () => {
-  it('creates a new store with no initial state', () => {
-    const store = createStore();
+  it('creates a new store with undefined as initial state', () => {
+    const store = createStore(undefined, countReducer);
     const initialState = store.getState();
     expect(initialState).toBeUndefined();
   });
 
   it('creates a new store with null as initial state', () => {
-    const store = createStore(null);
+    const store = createStore(null, countReducer);
     const initialState = store.getState();
     expect(initialState).toBe(null);
   });
 
   it('creates a new store with an empty array as initial state', () => {
-    const store = createStore([]);
+    const store = createStore([], countReducer);
     const initialState = store.getState();
     expect(initialState).toEqual([]);
   });
 
   it('creates a new store with an empty object as initial state', () => {
-    const store = createStore({});
+    const store = createStore({}, countReducer);
     const initialState = store.getState();
     expect(initialState).toEqual({});
   });
 
   it('creates a new store with a non-empty array as initial state', () => {
     const array = [1, 2, 'str'];
-    const store = createStore(array);
+    const store = createStore(array, countReducer);
     const initialState = store.getState();
     expect(initialState).toEqual(array);
   });
 
   it('creates a new store with a non-empty object as initial state', () => {
     const object = { bar: 'hello', foo: 10 };
-    const store = createStore(object);
+    const store = createStore(object, countReducer);
     const initialState = store.getState();
     expect(initialState).toEqual(object);
   });
 
   it('creates a new store with a number as initial state', () => {
-    const store = createStore(10);
+    const store = createStore(10, countReducer);
     const initialState = store.getState();
     expect(initialState).toEqual(10);
   });
 
   it('creates a new store with a string as initial state', () => {
-    const store = createStore('bar:foo');
+    const store = createStore('bar:foo', countReducer);
     const initialState = store.getState();
     expect(initialState).toEqual('bar:foo');
   });
 
   it('creates a new store with a function as initial state', () => {
     const fn = jest.fn();
-    const store = createStore(fn);
+    const store = createStore(fn, countReducer);
     const initialState = store.getState();
     expect(initialState).toEqual(fn);
+  });
+
+  it('creates a new store with no reducer', () => {
+    expect(() => {
+      createStore();
+    }).toThrow(/^Redux/);
+  });
+
+  it('creates a new store with invalid reducer', () => {
+    expect.assertions(2);
+
+    expect(() => {
+      createStore(undefined, 'reducer');
+    }).toThrow(/^Redux/);
+    expect(() => {
+      createStore(undefined, { reducer: i => i });
+    }).toThrow(/^Redux/);
   });
 
 });
