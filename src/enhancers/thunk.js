@@ -1,11 +1,25 @@
-module.exports = function (action, dispatch, getState) {
-  if (typeof action === 'object') {
-    dispatch(action);
-    return;
-  }
-  if (typeof action !== 'function') {
-    throw new Error('Thunk: action is not a function.');
+function thunk(createStore) {
+  function enhancedCreateStore(initialState, reducer, enhancer) {
+    if (typeof enhancer === 'function') {
+      return enhancer(enhancedCreateStore)(initialState, reducer);
+    }
+    const store = createStore(initialState, reducer);
+
+    return {
+      dispatch(action) {
+        if (typeof action === 'function') {
+          action(store.dispatch, store.getState);
+        } else {
+          store.dispatch(action);
+        }
+      },
+      getState() {
+        return store.getState();
+      },
+    };
   }
 
-  action(dispatch, getState);
-};
+  return enhancedCreateStore;
+}
+
+module.exports = thunk;
