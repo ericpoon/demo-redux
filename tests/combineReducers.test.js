@@ -2,14 +2,20 @@ const combineReducers = require('../src/combineReducers');
 const { authReducer } = require('./fixture/authReducer');
 const { countReducer } = require('./fixture/countReducer');
 
-it('combines valid reducers', () => {
-  combineReducers({
+it('returns a composite reducer that maps state keys to given reducers', () => {
+  const reducer = combineReducers({
     auth: authReducer,
     count: countReducer,
   });
+
+  const s1 = reducer({}, { type: 'LOGIN', userName: 'Foo' });
+  expect(s1.auth).toEqual({ loggedIn: true, userName: 'Foo' });
+  const s2 = reducer(s1, { type: 'INCREMENT' });
+  expect(s2.auth).toEqual(s1.auth);
+  expect(s2.count).toEqual(1);
 });
 
-it('combines reducers with no initial state', () => {
+it('throws if combining reducers that have no initial state', () => {
   expect(() => {
     combineReducers({
       auth: state => state,
@@ -18,16 +24,14 @@ it('combines reducers with no initial state', () => {
   }).toThrow(/^Redux/);
 });
 
-it('combines invalid reducers', () => {
-  expect.assertions(4);
+it('throws if combining invalid reducers', () => {
+  expect.assertions(5);
 
-  expect(() => {
-    combineReducers();
-  }).toThrow(/^Redux/);
+  expect(() => combineReducers())
+    .toThrow(/^Redux/);
 
-  expect(() => {
-    combineReducers(null);
-  }).toThrow(/^Redux/);
+  expect(() => combineReducers(null))
+    .toThrow(/^Redux/);
 
   expect(() => {
     combineReducers([authReducer, countReducer]);
@@ -36,6 +40,13 @@ it('combines invalid reducers', () => {
   expect(() => {
     combineReducers({
       auth: authReducer({}, {}),
+      count: countReducer({}, {}),
+    });
+  }).toThrow(/^Redux/);
+
+  expect(() => {
+    combineReducers({
+      auth: authReducer,
       count: countReducer({}, {}),
     });
   }).toThrow(/^Redux/);

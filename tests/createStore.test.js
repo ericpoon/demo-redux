@@ -4,6 +4,12 @@ const { authReducer, initialState: initialAuthState } = require('./fixture/authR
 const { countReducer, initialState: initialCountState } = require('./fixture/countReducer');
 
 describe('createStore', () => {
+  it('exposes the public API', () => {
+    const store = createStore(undefined, countReducer);
+    expect(store).toHaveProperty('dispatch');
+    expect(store).toHaveProperty('getState');
+  });
+
   it('creates a new store with undefined as initial state', () => {
     const store = createStore(undefined, countReducer);
     const initialState = store.getState();
@@ -61,26 +67,73 @@ describe('createStore', () => {
     expect(initialState).toEqual(fn);
   });
 
-  it('creates a new store with no reducer', () => {
-    expect(() => {
-      createStore();
-    }).toThrow(/^Redux/);
-  });
-
-  it('creates a new store with invalid reducer', () => {
-    expect.assertions(2);
-
-    expect(() => {
-      createStore(undefined, 'reducer');
-    }).toThrow(/^Redux/);
-    expect(() => {
-      createStore(undefined, { reducer: i => i });
-    }).toThrow(/^Redux/);
+  it('throws if reducer is not a function', () => {
+    expect(() => createStore(undefined))
+      .toThrow(/^Redux/);
+    expect(() => createStore(undefined, 'reducer'))
+      .toThrow(/^Redux/);
+    expect(() => createStore(undefined, { reducer: i => i }))
+      .toThrow(/^Redux/);
+    expect(() => createStore(undefined, i => i))
+      .not.toThrow();
   });
 
 });
 
-describe('store.dispatch - single reducer', () => {
+describe('createStore with enhancer', () => {
+  it('creates a new store with an identity enhancer', () => {
+    const enhancer = (createStore) => createStore;
+    const store = createStore(99, countReducer, enhancer);
+
+    expect(store).toHaveProperty('getState');
+    expect(store).toHaveProperty('dispatch');
+
+    expect(store.getState()).toBe(99);
+    store.dispatch({ type: 'DECREMENT' });
+    expect(store.getState()).toBe(98);
+  });
+
+  it('creates a new store with an enhancer', () => {
+    expect.assertions(9);
+
+    let spyDispatch;
+    let spyGetState;
+    const initialCount = 99;
+    const spyEnhancer = (createStore) => {
+      return (...args) => {
+        expect(args[0]).toBe(initialCount);
+        expect(args[1]).toEqual(countReducer);
+        expect(args).toHaveLength(2);
+
+        const store = createStore(...args);
+        spyDispatch = jest.fn(store.dispatch);
+        spyGetState = jest.fn(store.getState);
+
+        return {
+          ...store,
+          dispatch: spyDispatch,
+          getState: spyGetState,
+        };
+      };
+    };
+
+    const store = createStore(initialCount, countReducer, spyEnhancer);
+    const action = { type: 'INCREMENT' };
+
+    expect(store.getState()).toBe(99);
+    expect(spyGetState).toHaveBeenCalledTimes(1);
+
+    store.dispatch(action);
+    expect(spyDispatch).toHaveBeenCalledTimes(1);
+    expect(spyDispatch).toHaveBeenLastCalledWith(action);
+
+    expect(store.getState()).toBe(100);
+    expect(spyGetState).toHaveBeenCalledTimes(2);
+  });
+
+});
+
+describe('createStore - store.dispatch - single reducer', () => {
   let store;
   const initialState = { count: 0 };
   const reducer = (state, action) => {
@@ -137,7 +190,7 @@ describe('store.dispatch - single reducer', () => {
 
 });
 
-describe('store.dispatch - combined reducer', () => {
+describe('createStore - store.dispatch - combined reducer', () => {
   let store;
 
   beforeEach(() => {
@@ -147,13 +200,13 @@ describe('store.dispatch - combined reducer', () => {
     }));
   });
 
-  it('dispatches valid action in first reducer', () => {
+  it('dispatches action in first reducer', () => {
     store.dispatch({ type: 'LOGIN', userName: 'tester' });
     expect(store.getState().auth).toEqual({ loggedIn: true, userName: 'tester' });
     expect(store.getState().count).toEqual(initialCountState);
   });
 
-  it('dispatches valid action in first reducer', () => {
+  it('dispatches action in second reducer', () => {
     store.dispatch({ type: 'INCREMENT' });
     expect(store.getState().auth).toEqual(initialAuthState);
     expect(store.getState().count).toEqual(1);
