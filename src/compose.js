@@ -1,3 +1,5 @@
+// Note: asynchronous enhancers should be on the leftmost side of the composition chain
+
 function compose(...functions) {
 
   if (functions.length === 0) return arg => arg;
