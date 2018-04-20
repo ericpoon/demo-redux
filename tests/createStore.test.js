@@ -213,3 +213,83 @@ describe('createStore - store.dispatch - combined reducer', () => {
   });
 
 });
+
+describe('createStore - store.subscribe', () => {
+  let store;
+
+  beforeEach(() => {
+    store = createStore(undefined, countReducer);
+  });
+
+  it('subscribes and unsubscribes one listener', () => {
+    const spyListener = jest.fn();
+    const unsubscribe = store.subscribe(spyListener);
+    store.dispatch({});
+    expect(spyListener).toHaveBeenCalledTimes(1);
+    store.dispatch({});
+    expect(spyListener).toHaveBeenCalledTimes(2);
+    unsubscribe();
+    store.dispatch({});
+    expect(spyListener).toHaveBeenCalledTimes(2);
+  });
+
+  it('subscribes more than one listeners and listeners are called in correct order', () => {
+    expect.assertions(6);
+
+    const spyListener1 = jest.fn(() => {
+      expect(spyListener2).toHaveBeenCalledTimes(0);
+      expect(spyListener3).toHaveBeenCalledTimes(0);
+    });
+    const spyListener2 = jest.fn(() => {
+      expect(spyListener1).toHaveBeenCalledTimes(1);
+      expect(spyListener3).toHaveBeenCalledTimes(0);
+    });
+    const spyListener3 = jest.fn(() => {
+      expect(spyListener1).toHaveBeenCalledTimes(1);
+      expect(spyListener3).toHaveBeenCalledTimes(1);
+    });
+
+    store.subscribe(spyListener1);
+    store.subscribe(spyListener2);
+    store.subscribe(spyListener3);
+
+    store.dispatch({});
+  });
+
+  it('unsubscribes listeners when there are more than one listeners', () => {
+    const spyListener1 = jest.fn();
+    const spyListener2 = jest.fn();
+    const spyListener3 = jest.fn();
+
+    const unsubscribe1 = store.subscribe(spyListener1);
+    const unsubscribe2 = store.subscribe(spyListener2);
+    const unsubscribe3 = store.subscribe(spyListener3);
+
+    unsubscribe2();
+    store.dispatch({});
+    expect(spyListener1).toHaveBeenCalledTimes(1);
+    expect(spyListener2).toHaveBeenCalledTimes(0);
+    expect(spyListener3).toHaveBeenCalledTimes(1);
+
+    unsubscribe1();
+    store.dispatch({});
+    expect(spyListener1).toHaveBeenCalledTimes(1);
+    expect(spyListener2).toHaveBeenCalledTimes(0);
+    expect(spyListener3).toHaveBeenCalledTimes(2);
+
+    unsubscribe3();
+    store.dispatch({});
+    expect(spyListener1).toHaveBeenCalledTimes(1);
+    expect(spyListener2).toHaveBeenCalledTimes(0);
+    expect(spyListener3).toHaveBeenCalledTimes(2);
+  });
+
+  it('unsubscribes an already unsubscribed listener', () => {
+    const spyListener = jest.fn();
+    const unsubscribe = store.subscribe(spyListener);
+    expect(() => {
+      unsubscribe();
+      unsubscribe();
+    }).not.toThrow();
+  });
+});
