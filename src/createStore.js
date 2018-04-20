@@ -1,4 +1,4 @@
-function createStore(initialState, reducer, enhancer) {
+function createStore(reducer, initialState, enhancer) {
   const _listeners = [];
   let _state = initialState;
 
@@ -7,7 +7,7 @@ function createStore(initialState, reducer, enhancer) {
   }
 
   if (typeof enhancer === 'function') {
-    return enhancer(createStore)(initialState, reducer);
+    return enhancer(createStore)(reducer, initialState);
   }
 
   return {
@@ -32,7 +32,7 @@ function createStore(initialState, reducer, enhancer) {
       return () => {
         const index = _listeners.indexOf(listener);
         _listeners.splice(index, 1);
-      }
+      };
     },
   };
 }

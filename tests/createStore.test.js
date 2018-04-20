@@ -5,76 +5,76 @@ const { countReducer, initialState: initialCountState } = require('./fixture/cou
 
 describe('createStore', () => {
   it('exposes the public API', () => {
-    const store = createStore(undefined, countReducer);
+    const store = createStore(countReducer);
     expect(store).toHaveProperty('dispatch');
     expect(store).toHaveProperty('getState');
   });
 
   it('creates a new store with undefined as initial state', () => {
-    const store = createStore(undefined, countReducer);
+    const store = createStore(countReducer);
     const initialState = store.getState();
     expect(initialState).toBeUndefined();
   });
 
   it('creates a new store with null as initial state', () => {
-    const store = createStore(null, countReducer);
+    const store = createStore(countReducer, null);
     const initialState = store.getState();
     expect(initialState).toBe(null);
   });
 
   it('creates a new store with an empty array as initial state', () => {
-    const store = createStore([], countReducer);
+    const store = createStore(countReducer, []);
     const initialState = store.getState();
     expect(initialState).toEqual([]);
   });
 
   it('creates a new store with an empty object as initial state', () => {
-    const store = createStore({}, countReducer);
+    const store = createStore(countReducer, {});
     const initialState = store.getState();
     expect(initialState).toEqual({});
   });
 
   it('creates a new store with a non-empty array as initial state', () => {
     const array = [1, 2, 'str'];
-    const store = createStore(array, countReducer);
+    const store = createStore(countReducer, array);
     const initialState = store.getState();
     expect(initialState).toEqual(array);
   });
 
   it('creates a new store with a non-empty object as initial state', () => {
     const object = { bar: 'hello', foo: 10 };
-    const store = createStore(object, countReducer);
+    const store = createStore(countReducer, object);
     const initialState = store.getState();
     expect(initialState).toEqual(object);
   });
 
   it('creates a new store with a number as initial state', () => {
-    const store = createStore(10, countReducer);
+    const store = createStore(countReducer, 10);
     const initialState = store.getState();
     expect(initialState).toEqual(10);
   });
 
   it('creates a new store with a string as initial state', () => {
-    const store = createStore('bar:foo', countReducer);
+    const store = createStore(countReducer, 'bar:foo');
     const initialState = store.getState();
     expect(initialState).toEqual('bar:foo');
   });
 
   it('creates a new store with a function as initial state', () => {
     const fn = jest.fn();
-    const store = createStore(fn, countReducer);
+    const store = createStore(countReducer, fn);
     const initialState = store.getState();
     expect(initialState).toEqual(fn);
   });
 
   it('throws if reducer is not a function', () => {
-    expect(() => createStore(undefined))
+    expect(() => createStore())
       .toThrow(/^Redux/);
-    expect(() => createStore(undefined, 'reducer'))
+    expect(() => createStore('reducer'))
       .toThrow(/^Redux/);
-    expect(() => createStore(undefined, { reducer: i => i }))
+    expect(() => createStore({ reducer: i => i }))
       .toThrow(/^Redux/);
-    expect(() => createStore(undefined, i => i))
+    expect(() => createStore(i => i))
       .not.toThrow();
   });
 
@@ -83,7 +83,7 @@ describe('createStore', () => {
 describe('createStore with enhancer', () => {
   it('creates a new store with an identity enhancer', () => {
     const enhancer = (createStore) => createStore;
-    const store = createStore(99, countReducer, enhancer);
+    const store = createStore(countReducer, 99, enhancer);
 
     expect(store).toHaveProperty('getState');
     expect(store).toHaveProperty('dispatch');
@@ -101,8 +101,8 @@ describe('createStore with enhancer', () => {
     const initialCount = 99;
     const spyEnhancer = (createStore) => {
       return (...args) => {
-        expect(args[0]).toBe(initialCount);
-        expect(args[1]).toEqual(countReducer);
+        expect(args[0]).toEqual(countReducer);
+        expect(args[1]).toBe(initialCount);
         expect(args).toHaveLength(2);
 
         const store = createStore(...args);
@@ -117,17 +117,17 @@ describe('createStore with enhancer', () => {
       };
     };
 
-    const store = createStore(initialCount, countReducer, spyEnhancer);
+    const store = createStore(countReducer, initialCount, spyEnhancer);
     const action = { type: 'INCREMENT' };
 
-    expect(store.getState()).toBe(99);
+    expect(store.getState()).toBe(initialCount);
     expect(spyGetState).toHaveBeenCalledTimes(1);
 
     store.dispatch(action);
     expect(spyDispatch).toHaveBeenCalledTimes(1);
     expect(spyDispatch).toHaveBeenLastCalledWith(action);
 
-    expect(store.getState()).toBe(100);
+    expect(store.getState()).toBe(initialCount + 1);
     expect(spyGetState).toHaveBeenCalledTimes(2);
   });
 
@@ -146,7 +146,7 @@ describe('createStore - store.dispatch - single reducer', () => {
   };
 
   beforeEach(() => {
-    store = createStore(initialState, reducer);
+    store = createStore(reducer, initialState);
   });
 
   it('dispatches valid action', () => {
@@ -194,7 +194,7 @@ describe('createStore - store.dispatch - combined reducer', () => {
   let store;
 
   beforeEach(() => {
-    store = createStore(undefined, combineReducers({
+    store = createStore(combineReducers({
       auth: authReducer,
       count: countReducer,
     }));
@@ -218,7 +218,7 @@ describe('createStore - store.subscribe', () => {
   let store;
 
   beforeEach(() => {
-    store = createStore(undefined, countReducer);
+    store = createStore(countReducer);
   });
 
   it('subscribes and unsubscribes one listener', () => {

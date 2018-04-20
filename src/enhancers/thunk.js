@@ -1,9 +1,9 @@
 function thunk(createStore) {
-  function enhancedCreateStore(initialState, reducer, enhancer) {
+  function enhancedCreateStore(reducer, initialState, enhancer) {
     if (typeof enhancer === 'function') {
-      return enhancer(enhancedCreateStore)(initialState, reducer);
+      return enhancer(enhancedCreateStore)(reducer, initialState);
     }
-    const store = createStore(initialState, reducer);
+    const store = createStore(reducer, initialState);
 
     return {
       dispatch(action) {
