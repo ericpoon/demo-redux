@@ -10,61 +10,54 @@ describe('createStore', () => {
     expect(store).toHaveProperty('getState');
   });
 
-  it('creates a new store with undefined as initial state', () => {
+  it('creates store with undefined as initial state', () => {
     const store = createStore(countReducer);
     const initialState = store.getState();
     expect(initialState).toBeUndefined();
   });
 
-  it('creates a new store with null as initial state', () => {
+  it('creates store with null as initial state', () => {
     const store = createStore(countReducer, null);
     const initialState = store.getState();
     expect(initialState).toBe(null);
   });
 
-  it('creates a new store with an empty array as initial state', () => {
+  it('creates store with an empty array as initial state', () => {
     const store = createStore(countReducer, []);
     const initialState = store.getState();
     expect(initialState).toEqual([]);
   });
 
-  it('creates a new store with an empty object as initial state', () => {
+  it('creates store with an empty object as initial state', () => {
     const store = createStore(countReducer, {});
     const initialState = store.getState();
     expect(initialState).toEqual({});
   });
 
-  it('creates a new store with a non-empty array as initial state', () => {
+  it('creates store with a non-empty array as initial state', () => {
     const array = [1, 2, 'str'];
     const store = createStore(countReducer, array);
     const initialState = store.getState();
     expect(initialState).toEqual(array);
   });
 
-  it('creates a new store with a non-empty object as initial state', () => {
+  it('creates store with a non-empty object as initial state', () => {
     const object = { bar: 'hello', foo: 10 };
     const store = createStore(countReducer, object);
     const initialState = store.getState();
     expect(initialState).toEqual(object);
   });
 
-  it('creates a new store with a number as initial state', () => {
+  it('creates store with a number as initial state', () => {
     const store = createStore(countReducer, 10);
     const initialState = store.getState();
     expect(initialState).toEqual(10);
   });
 
-  it('creates a new store with a string as initial state', () => {
+  it('creates store with a string as initial state', () => {
     const store = createStore(countReducer, 'bar:foo');
     const initialState = store.getState();
     expect(initialState).toEqual('bar:foo');
-  });
-
-  it('creates a new store with a function as initial state', () => {
-    const fn = jest.fn();
-    const store = createStore(countReducer, fn);
-    const initialState = store.getState();
-    expect(initialState).toEqual(fn);
   });
 
   it('throws if reducer is not a function', () => {
@@ -81,7 +74,7 @@ describe('createStore', () => {
 });
 
 describe('createStore with enhancer', () => {
-  it('creates a new store with an identity enhancer', () => {
+  it('creates store with an identity enhancer', () => {
     const enhancer = (createStore) => createStore;
     const store = createStore(countReducer, 99, enhancer);
 
@@ -93,7 +86,7 @@ describe('createStore with enhancer', () => {
     expect(store.getState()).toBe(98);
   });
 
-  it('creates a new store with an enhancer', () => {
+  it('creates store with an enhancer', () => {
     expect.assertions(9);
 
     let spyDispatch;
@@ -129,6 +122,20 @@ describe('createStore with enhancer', () => {
 
     expect(store.getState()).toBe(initialCount + 1);
     expect(spyGetState).toHaveBeenCalledTimes(2);
+  });
+
+  it('accepts enhancer as the second argument if initial state is missing', () => {
+    expect.assertions(3);
+
+    const spyEnhancer = (createStore) => {
+      return (...args) => {
+        expect(args[0]).toEqual(countReducer);
+        expect(args[1]).toBe(undefined);
+        expect(args).toHaveLength(2);
+        return createStore(...args);
+      };
+    };
+    createStore(countReducer, spyEnhancer);
   });
 
 });

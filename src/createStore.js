@@ -1,4 +1,11 @@
 function createStore(reducer, initialState, enhancer) {
+
+  if (typeof initialState === 'function' && typeof enhancer === 'undefined') {
+    // accept enhancer as the second argument is initial state is not provided
+    enhancer = initialState;
+    initialState = undefined;
+  }
+
   const _listeners = [];
   let _state = initialState;
 
