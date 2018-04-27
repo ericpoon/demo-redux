@@ -221,6 +221,56 @@ describe('createStore - store.dispatch - combined reducer', () => {
 
 });
 
+describe('createStore - store.dispatch - reducer throws error', () => {
+  let store;
+  const { stackReducer } = require('./fixture/stackReducer');
+
+  beforeEach(() => {
+    store = createStore(stackReducer);
+  });
+
+  it('throws when popping an empty stack', () => {
+    expect(() => store.dispatch({ type: 'POP' })).toThrow();
+  });
+
+  it('throws when trying to get state after a dispatch fails', () => {
+    expect(() => {
+      try {
+        store.dispatch({ type: 'POP' });
+      } catch (e) {
+      }
+      store.getState();
+    }).toThrow(/^Redux: .*dispatching/);
+  });
+
+  it('throws when trying to subscribe after a dispatch fails', () => {
+    expect(() => {
+      try {
+        store.dispatch({ type: 'POP' });
+      } catch (e) {
+      }
+      store.subscribe(jest.fn());
+    }).toThrow(/^Redux: .*dispatching/);
+  });
+
+  it('gets fixed after dispatching a valid action without exception thrown', () => {
+    expect.assertions(2);
+
+    expect(() => {
+      try {
+        store.dispatch({ type: 'POP' });
+      } catch (e) {
+      }
+      store.dispatch({ type: 'PUSH', item: 'item0' });
+      store.getState();
+      store.subscribe(jest.fn());
+    }).not.toThrow();
+
+    expect(store.getState()).toEqual(['item0']);
+  });
+
+});
+
 describe('createStore - store.subscribe', () => {
   let store;
 

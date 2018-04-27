@@ -8,6 +8,7 @@ function createStore(reducer, initialState, enhancer) {
 
   const _listeners = [];
   let _state = initialState;
+  let _isDispatching = false;
 
   if (typeof reducer !== 'function') {
     throw new Error('Redux: Reducer must be a function');
@@ -23,15 +24,29 @@ function createStore(reducer, initialState, enhancer) {
         for (const i in _listeners) {
           _listeners[i]();
         }
-        _state = reducer(_state, action);
+
+        _isDispatching = true;
+        try {
+          _state = reducer(_state, action);
+          _isDispatching = false;
+        } catch (e) {
+          throw e;
+        }
+
       } else {
         throw new Error('Redux: Action must be an object');
       }
     },
     getState() {
+      if (_isDispatching) {
+        throw new Error('Redux: Cannot get state when dispatching, last dispatch may throw exception, try re-dispatch again');
+      }
       return _state;
     },
     subscribe(listener) {
+      if (_isDispatching) {
+        throw new Error('Redux: Cannot subscribe when dispatching, last dispatch may throw exception, try re-dispatch again');
+      }
       if (typeof listener !== 'function') {
         throw new Error('Redux: Listener must be a function');
       }
