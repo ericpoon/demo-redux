@@ -14,6 +14,7 @@ export function connect(mapStateToProps, mapDispatchToProps) {
         super();
 
         this.state = {};
+        _globalStore.dispatch({ type: '@@INIT' }); // this loads inital state set in reducer
         const props = mapStateToProps(_globalStore.getState());
         const newKeys = Object.keys(props);
         newKeys.forEach((key) => {
