@@ -21,16 +21,16 @@ function createStore(reducer, initialState, enhancer) {
   return {
     dispatch(action) {
       if (typeof action === 'object' && !Array.isArray(action)) {
-        for (const i in _listeners) {
-          _listeners[i]();
-        }
-
         _isDispatching = true;
         try {
           _state = reducer(_state, action);
           _isDispatching = false;
         } catch (e) {
           throw e;
+        }
+
+        for (const i in _listeners) {
+          _listeners[i]();
         }
 
       } else {

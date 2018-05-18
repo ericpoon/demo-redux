@@ -349,4 +349,10 @@ describe('createStore - store.subscribe', () => {
       unsubscribe();
     }).not.toThrow();
   });
+
+  it('throws if listener is not a function', () => {
+    expect(() => {
+      store.subscribe('listener');
+    }).toThrow(/must be a function/);
+  });
 });
