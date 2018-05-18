@@ -6,6 +6,7 @@
   "scripts": {
     "build": "webpack",
     "start": "node ./dist/bundle.js",
+    "start:webpack": "webpack-dev-server",
     "test": "jest"
   },
   "dependencies": {
@@ -20,6 +21,7 @@
     "babel-preset-react": "^6.24.1",
     "jest": "^22.4.3",
     "webpack": "^4.6.0",
-    "webpack-cli": "^2.1.2"
+    "webpack-cli": "^2.1.2",
+    "webpack-dev-server": "^3.1.4"
   }
 }
