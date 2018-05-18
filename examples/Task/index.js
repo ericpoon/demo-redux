@@ -2,21 +2,11 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import { Provider, connect } from '../../src/react-redux';
 import { createStore } from '../../src/redux';
+import { taskReducer } from '../../tests/fixture/taskReducer';
 
 const Task = (props) => {
   return <p>title: {props.title}</p>;
 };
-
-const taskReducer = (state, action) => {
-  switch (action.type) {
-    case 'CHANGE_TITLE':
-      return {...state, title: action.title};
-    case 'CHANGE_DESCRIPTION':
-      return {...state, description: action.description};
-    default:
-      return state;
-  }
-}
 
 const store = createStore(taskReducer, {title: 'task title', description: ''})
 
