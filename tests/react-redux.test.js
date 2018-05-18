@@ -30,7 +30,7 @@ it('re-renders when state has been updated', () => {
 
   const ConnectedCounter = connect(mapStateToProps)(Counter);
 
-  const store = createStore(countReducer, 0);
+  const store = createStore(countReducer);
   const app = (
     <Provider store={store}>
       <ConnectedCounter />
@@ -73,7 +73,7 @@ it('re-renders when state has been updated', () => {
 
   const ConnectedTask = connect(mapStateToProps)(Task);
 
-  const store = createStore(taskReducer, { title: 'Title', description: 'Description' });
+  const store = createStore(taskReducer);
   const app = (
     <Provider store={store}>
       <ConnectedTask />
