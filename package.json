@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack",
     "start": "node ./dist/bundle.js",
-    "start:webpack": "webpack-dev-server",
+    "start:demo": "webpack-dev-server --config ./examples/webpack.config.js",
     "test": "jest"
   },
   "dependencies": {
