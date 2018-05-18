@@ -1,7 +1,9 @@
 {
-  "dependencies": {
-    "axios": "^0.18.0",
-    "jest": "^22.4.3",
-    "zen-observable": "^0.8.8"
+  "name": "demo-redux",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^22.4.3"
   }
 }
