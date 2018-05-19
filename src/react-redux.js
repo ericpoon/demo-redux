@@ -31,7 +31,7 @@ export function connect(mapStateToProps, mapDispatchToProps) {
               this.state[key] = action;
             }
           });
-        } else { // if it's an object
+        } else if (typeof mapDispatchToProps === 'object') {
           const actions = mapDispatchToProps;
           const actionKeys = Object.keys(actions);
           actionKeys.forEach(key => {
