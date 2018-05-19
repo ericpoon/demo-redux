@@ -1,18 +1,24 @@
 import React from 'react';
 import ReactDom from 'react-dom';
 import { Provider } from '../../src/react-redux';
-import { createStore } from '../../src/redux';
-import taskReducer from './taskReducer';
-import TaskList from './components/TaskListContainer';
+import { createStore, combineReducers } from '../../src/redux';
+import { addTask } from './actions/taskActions';
+import taskReducer from './reducers/taskReducer';
+import formReducer from './reducers/formReducer';
+import TaskList from './containers/TaskList';
 
-const initialState = [
-  { title: 'Pick up laundry', done: false },
-  { title: 'Go running', done: false },
-  { title: 'Take medicine', done: false },
-  { title: 'Appointment with clients', done: false },
-  { title: 'Do housework', done: false },
-];
-const store = createStore(taskReducer, initialState);
+const combinedReducer = combineReducers({
+  tasks: taskReducer,
+  form: formReducer,
+});
+
+const store = createStore(combinedReducer);
+
+store.dispatch(addTask('Pick up laundry'));
+store.dispatch(addTask('Go running'));
+store.dispatch(addTask('Take medicine'));
+store.dispatch(addTask('Appointment with clients'));
+store.dispatch(addTask('Do housework'));
 
 const main = (
   <Provider store={store}>
