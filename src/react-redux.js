@@ -54,7 +54,7 @@ export function connect(mapStateToProps, mapDispatchToProps) {
       }
 
       render() {
-        return <Component {...Component.props} {...this.state} />;
+        return <Component {...this.props} {...this.state} />;
       }
     }
 
