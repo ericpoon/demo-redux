@@ -39,7 +39,7 @@ it('re-renders when state has been updated', () => {
 
   mount(app);
   expect(mockFn).toHaveBeenLastCalledWith(0);
-  
+
   store.dispatch({ type: 'INCREMENT' });
   expect(mockFn).toHaveBeenLastCalledWith(1);
 
@@ -55,7 +55,7 @@ it('re-renders when state has been updated', () => {
   expect(mockFn).toHaveBeenCalledTimes(5);
 });
 
-it('re-renders when state has been updated', () => {
+it('re-renders only when related state has been updated', () => {
   const mockFn = jest.fn();
 
   class Task extends Component {
@@ -82,7 +82,7 @@ it('re-renders when state has been updated', () => {
 
   mount(app);
   expect(mockFn).toHaveBeenLastCalledWith('Title');
-  
+
   store.dispatch({ type: 'CHANGE_TITLE', title: 'new title' });
   expect(mockFn).toHaveBeenLastCalledWith('new title');
   expect(mockFn).toHaveBeenCalledTimes(2);
@@ -90,3 +90,9 @@ it('re-renders when state has been updated', () => {
   store.dispatch({ type: 'CHANGE_DESCRIPTION', description: 'new description' });
   expect(mockFn).toHaveBeenCalledTimes(2); // no re-rendering
 });
+
+it('maps state to props correctly');
+
+it('maps dispatch to props correctly (mapDispatchToProps as an object)');
+
+it('maps dispatch to props correctly (mapDispatchToProps as a function)');
