@@ -26,5 +26,5 @@ const main = (
   </Provider>
 );
 
-const app = document.getElementById('todo-list-app');
+const app = document.getElementById('todo-list-advanced-app');
 if (app) ReactDom.render(main, app);
