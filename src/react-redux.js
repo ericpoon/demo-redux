@@ -4,17 +4,17 @@ let _globalStore;
 
 export const Provider = ({ store, children }) => {
   _globalStore = store;
+  _globalStore.dispatch({ type: '@@INIT' }); // this loads initial state set in reducer
   return <div>{children}</div>;
 };
 
-export function connect(mapStateToProps, mapDispatchToProps) {
+export function connect(mapStateToProps = () => ({}), mapDispatchToProps) {
   return function (Component) {
     class Connected extends React.Component {
       constructor() {
         super();
 
         this.state = {};
-        _globalStore.dispatch({ type: '@@INIT' }); // this loads initial state set in reducer
 
         const props = mapStateToProps(_globalStore.getState());
         const propKeys = Object.keys(props);
