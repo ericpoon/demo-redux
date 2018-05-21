@@ -1,4 +1,4 @@
-const thunk = require('../../src/enhancers/thunk');
+const thunk = require('../../src/enhancers/redux-thunk');
 const createStore = require('../../src/createStore');
 const { countReducer } = require('../fixture/countReducer');
 

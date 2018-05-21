@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactDom from 'react-dom';
 import { Provider, connect } from '../../src/react-redux';
 import { createStore } from '../../src/redux';
-import thunk from '../../src/enhancers/thunk';
+import thunk from '../../src/enhancers/redux-thunk';
 
 class Student extends Component {
   render() {

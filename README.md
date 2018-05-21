@@ -18,4 +18,4 @@ The very popular middleware [Redux Thunk](https://github.com/reduxjs/redux-thunk
 1. **Counter** - A very minimal code demonstrating the usage of `redux` and `react-redux`
 2. **Todo List** - A simple version of todo list that allows user to interact with
 3. **Advanced Todo List** - A relatively complex todo list that allows creating a new todo or editing/removing existing ones.
-4. **Async Data Loading** - A very minimal code demonstrating how to use `thunk` with `react-redux`
+4. **Async Data Loading** - A very minimal code demonstrating how to use `redux-thunk` with `react-redux`
