@@ -6,6 +6,7 @@ function thunk(createStore) {
     const store = createStore(reducer, initialState);
 
     return {
+      ...store,
       dispatch(action) {
         if (typeof action === 'function') {
           action(store.dispatch, store.getState);

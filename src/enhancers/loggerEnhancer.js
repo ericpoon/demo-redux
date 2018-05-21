@@ -7,6 +7,7 @@ function logger(createStore) {
     const store = createStore(reducer, initialState);
 
     return {
+      ...store,
       dispatch(action) {
         console.log('>>>>>>> DISPATCH:\n' + formatObject(action) + '\n<<<<<<<');
         store.dispatch(action);

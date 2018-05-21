@@ -6,6 +6,7 @@ function timestamper(createStore) {
     const store = createStore(reducer, initialState);
 
     return {
+      ...store,
       dispatch(action) {
         console.log(`***** ${(new Date()).toLocaleString()} *****`);
         store.dispatch(action);
