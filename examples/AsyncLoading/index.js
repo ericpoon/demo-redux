@@ -4,22 +4,6 @@ import { Provider, connect } from '../../src/react-redux';
 import { createStore } from '../../src/redux';
 import thunk from '../../src/enhancers/redux-thunk';
 
-class Student extends Component {
-  render() {
-    const { loading, student, loadStudentInfo } = this.props;
-    return (
-      <div>
-        <h2>Student Information</h2>
-
-        <button onClick={loadStudentInfo}>Load</button>
-
-        {loading && <p>Loading...</p>}
-        {student && <p>{JSON.stringify(student)}</p>}
-      </div>
-    );
-  }
-}
-
 const mapStateToProps = state => ({
   loading: state.loading,
   student: state.student,
@@ -46,7 +30,22 @@ const loadStudentInfo = () => {
   };
 };
 
-const ConnectedStudent = connect(mapStateToProps, { loadStudentInfo })(Student);
+@connect(mapStateToProps, { loadStudentInfo })
+class Student extends Component {
+  render() {
+    const { loading, student, loadStudentInfo } = this.props;
+    return (
+      <div>
+        <h2>Student Information</h2>
+
+        <button onClick={loadStudentInfo}>Load</button>
+
+        {loading && <p>Loading...</p>}
+        {student && <p>{JSON.stringify(student)}</p>}
+      </div>
+    );
+  }
+}
 
 function countReducer(state = { loading: false, student: null }, action) {
   switch (action.type) {
@@ -63,7 +62,7 @@ const store = createStore(countReducer, thunk);
 
 const main = (
   <Provider store={store}>
-    <ConnectedStudent />
+    <Student />
   </Provider>
 );
 
